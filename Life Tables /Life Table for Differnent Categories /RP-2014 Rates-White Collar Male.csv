@@ -1,0 +1,172 @@
+Table Name:,RP-2014 Rates-White Collar
+Table Identity:,3127
+Provider Domain:,soa.org
+Provider Name:,Retirement Plans Experience Committee
+Table Reference:,RP-2014
+Content Type:,Annuitant Mortality
+Table Description:,RP-2014 Rates-White Collar Male
+EffDate:,
+Comments:,
+Keywords:,"Aggregate,Annuitant Mortality,United States of America"
+
+Table # ,1
+Table Description:,RP-2014 Rates-White Collar-Employee-Male
+Nation:,United States of America
+Scaling Factor:,0
+Data Type:,Floating Point
+"Row, Column (if applicable)->id:",Age
+"Row, Column (if applicable)->ScaleType:",Age
+"Row, Column (if applicable)->AxisName:",Age
+"Row, Column (if applicable)->MinScaleValue:",18
+"Row, Column (if applicable)->MaxScaleValue:",80
+"Row, Column (if applicable)->Increment:",1
+
+Row\Column,1
+18,0.00023
+19,0.000259
+20,0.000285
+21,0.000315
+22,0.000342
+23,0.000357
+24,0.000362
+25,0.000339
+26,0.000324
+27,0.000315
+28,0.000311
+29,0.000313
+30,0.000317
+31,0.000325
+32,0.000335
+33,0.000345
+34,0.000356
+35,0.000367
+36,0.000376
+37,0.000386
+38,0.0004
+39,0.000417
+40,0.00044
+41,0.000471
+42,0.000508
+43,0.000556
+44,0.000614
+45,0.000682
+46,0.000762
+47,0.000852
+48,0.000952
+49,0.001062
+50,0.001182
+51,0.001312
+52,0.001453
+53,0.001605
+54,0.001772
+55,0.001955
+56,0.002159
+57,0.002389
+58,0.00265
+59,0.002948
+60,0.003288
+61,0.003675
+62,0.004114
+63,0.004612
+64,0.005173
+65,0.005805
+66,0.006508
+67,0.007296
+68,0.008179
+69,0.009169
+70,0.010279
+71,0.011523
+72,0.012917
+73,0.01448
+74,0.016232
+75,0.018196
+76,0.020398
+77,0.022867
+78,0.025634
+79,0.028736
+80,0.032214
+
+Table # ,2
+Table Description:,RP-2014 Rates-White Collar-Healthy Annuitant-Male
+Nation:,United States of America
+Scaling Factor:,0
+Data Type:,Floating Point
+"Row, Column (if applicable)->id:",Age
+"Row, Column (if applicable)->ScaleType:",Age
+"Row, Column (if applicable)->AxisName:",Age
+"Row, Column (if applicable)->MinScaleValue:",50
+"Row, Column (if applicable)->MaxScaleValue:",120
+"Row, Column (if applicable)->Increment:",1
+
+Row\Column,1
+50,0.002764
+51,0.002981
+52,0.003202
+53,0.003429
+54,0.003661
+55,0.003908
+56,0.004121
+57,0.004356
+58,0.004616
+59,0.004905
+60,0.005225
+61,0.005582
+62,0.005984
+63,0.006442
+64,0.006969
+65,0.00758
+66,0.00829
+67,0.009114
+68,0.010066
+69,0.011159
+70,0.012402
+71,0.013803
+72,0.015375
+73,0.01713
+74,0.019088
+75,0.021279
+76,0.023738
+77,0.02651
+78,0.029651
+79,0.033225
+80,0.037307
+81,0.04198
+82,0.047333
+83,0.053459
+84,0.060449
+85,0.068396
+86,0.077396
+87,0.087552
+88,0.098978
+89,0.111806
+90,0.12619
+91,0.141713
+92,0.15813
+93,0.175288
+94,0.193131
+95,0.211674
+96,0.230976
+97,0.251106
+98,0.272113
+99,0.293848
+100,0.313988
+101,0.334365
+102,0.354599
+103,0.374524
+104,0.393982
+105,0.412831
+106,0.430946
+107,0.448227
+108,0.464592
+109,0.479987
+110,0.494376
+111,0.5
+112,0.5
+113,0.5
+114,0.5
+115,0.5
+116,0.5
+117,0.5
+118,0.5
+119,0.5
+120,1

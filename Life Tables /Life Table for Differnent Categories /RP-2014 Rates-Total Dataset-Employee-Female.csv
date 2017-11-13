@@ -1,0 +1,303 @@
+Table Name:,RP-2014 Rates-Total Dataset
+Table Identity:,3124
+Provider Domain:,soa.org
+Provider Name:,Retirement Plans Experience Committee
+Table Reference:,RP-2014
+Content Type:,Annuitant Mortality
+Table Description:,RP-2014 Rates-Total Dataset Female
+EffDate:,
+Comments:,"Study Data:  The primary focus of this study was a comprehensive review of recent mortality experience of uninsured private retirement plans in the United States. With the exception of the mortality rates at the youngest and oldest ages, the participant data underlying the RP-2014 tables reflect mortality experience of retirement plans subject to the funding rules of the Pension Protection Act of 2006 (PPA). The final dataset upon which this study has been based reflects approximately 10.5 million life-years of exposure and more than 220,000 deaths, all from uninsured private pension plans subject to PPA funding rules. Data were submitted for a total of 123 private and public/federal pension plans in response to RPEC’s request for plan experience covering the years 2004 through 2008. For purposes of characterizing plans as blue collar or white collar, RPEC used the same criteria as were described in the RP-2000 study. RPEC first projected the raw age nearest birthday mortality rates from their central year (2006) to 2014 using the Scale MP-2014 mortality improvement rates. Those projected rates were then graduated using Whittaker-Henderson-Lowrie methodology, and subsequently extended to extreme (very old or very young) ages using a variety of standard actuarial techniques. The final result was a set of 12 gender-specific amount-weighted tables with base year of 2014: 
+• Employee Tables (ages 18 through 80)
+o Total (all nondisabled data)
+o Blue Collar
+o White Collar
+o Bottom Quartile (based on salary)
+o Top Quartile (based on salary)
+• Healthy Annuitant Tables (ages 50 through 120)
+o Total (all nondisabled data)
+o Blue Collar
+o White Collar
+o Bottom Quartile (based on benefit amount)
+o Top Quartile (based on benefit amount)
+• Disabled Retiree Table (ages 18 through 120)
+• Juvenile Table (ages 0 through 17)"
+Keywords:,"Aggregate,Annuitant Mortality,United States of America"
+
+Table # ,1
+Table Description:,RP-2014 Rates-Total Dataset-Employee-Female
+Nation:,United States of America
+Scaling Factor:,0
+Data Type:,Floating Point
+"Row, Column (if applicable)->id:",Age
+"Row, Column (if applicable)->ScaleType:",Age
+"Row, Column (if applicable)->AxisName:",Age
+"Row, Column (if applicable)->MinScaleValue:",18
+"Row, Column (if applicable)->MaxScaleValue:",80
+"Row, Column (if applicable)->Increment:",1
+
+Row\Column,1
+18,0.000157
+19,0.000162
+20,0.000162
+21,0.000162
+22,0.000162
+23,0.000166
+24,0.000169
+25,0.000173
+26,0.000179
+27,0.000187
+28,0.000196
+29,0.000206
+30,0.000218
+31,0.000231
+32,0.000244
+33,0.000258
+34,0.000272
+35,0.000286
+36,0.0003
+37,0.000318
+38,0.000339
+39,0.000365
+40,0.000396
+41,0.000433
+42,0.000477
+43,0.000529
+44,0.000589
+45,0.000657
+46,0.000733
+47,0.000816
+48,0.000906
+49,0.001001
+50,0.001102
+51,0.001206
+52,0.001315
+53,0.001429
+54,0.001548
+55,0.001673
+56,0.001805
+57,0.001946
+58,0.002097
+59,0.002261
+60,0.002442
+61,0.002642
+62,0.002864
+63,0.003113
+64,0.003389
+65,0.003696
+66,0.004113
+67,0.004577
+68,0.005094
+69,0.005669
+70,0.006309
+71,0.007021
+72,0.007813
+73,0.008695
+74,0.009676
+75,0.010768
+76,0.011983
+77,0.013336
+78,0.014841
+79,0.016516
+80,0.01838
+
+Table # ,2
+Table Description:,RP-2014 Rates-Total Dataset-Healthy Annuitant-Female
+Nation:,United States of America
+Scaling Factor:,0
+Data Type:,Floating Point
+"Row, Column (if applicable)->id:",Age
+"Row, Column (if applicable)->ScaleType:",Age
+"Row, Column (if applicable)->AxisName:",Age
+"Row, Column (if applicable)->MinScaleValue:",50
+"Row, Column (if applicable)->MaxScaleValue:",120
+"Row, Column (if applicable)->Increment:",1
+
+Row\Column,1
+50,0.002768
+51,0.002905
+52,0.003057
+53,0.003225
+54,0.003412
+55,0.003622
+56,0.003858
+57,0.004128
+58,0.004436
+59,0.004789
+60,0.005191
+61,0.005646
+62,0.006156
+63,0.006723
+64,0.007352
+65,0.008048
+66,0.008821
+67,0.009679
+68,0.010633
+69,0.011692
+70,0.012868
+71,0.014171
+72,0.015614
+73,0.01721
+74,0.018977
+75,0.020938
+76,0.023118
+77,0.025554
+78,0.028288
+79,0.031366
+80,0.034844
+81,0.038783
+82,0.043246
+83,0.048305
+84,0.054032
+85,0.060504
+86,0.067801
+87,0.076012
+88,0.08523
+89,0.095563
+90,0.107126
+91,0.119744
+92,0.133299
+93,0.14772
+94,0.162971
+95,0.179034
+96,0.195903
+97,0.213565
+98,0.231991
+99,0.251123
+100,0.270858
+101,0.29104
+102,0.311444
+103,0.3319
+104,0.352232
+105,0.372273
+106,0.39186
+107,0.410849
+108,0.429112
+109,0.446544
+110,0.463061
+111,0.478604
+112,0.493137
+113,0.5
+114,0.5
+115,0.5
+116,0.5
+117,0.5
+118,0.5
+119,0.5
+120,1
+
+Table # ,3
+Table Description:,RP-2014 Rates-Total Dataset-Disabled Retiree-Female
+Nation:,United States of America
+Scaling Factor:,0
+Data Type:,Floating Point
+"Row, Column (if applicable)->id:",Age
+"Row, Column (if applicable)->ScaleType:",Age
+"Row, Column (if applicable)->AxisName:",Age
+"Row, Column (if applicable)->MinScaleValue:",18
+"Row, Column (if applicable)->MaxScaleValue:",120
+"Row, Column (if applicable)->Increment:",1
+
+Row\Column,1
+18,0.002162
+19,0.002231
+20,0.002231
+21,0.002231
+22,0.002231
+23,0.002286
+24,0.002328
+25,0.002383
+26,0.002465
+27,0.002576
+28,0.0027
+29,0.002837
+30,0.003003
+31,0.003182
+32,0.003361
+33,0.003553
+34,0.003746
+35,0.003939
+36,0.004132
+37,0.00438
+38,0.004669
+39,0.005027
+40,0.005454
+41,0.005964
+42,0.00657
+43,0.007286
+44,0.008112
+45,0.009049
+46,0.009635
+47,0.010215
+48,0.010787
+49,0.011352
+50,0.011907
+51,0.01245
+52,0.012979
+53,0.013494
+54,0.013992
+55,0.014479
+56,0.014958
+57,0.015439
+58,0.015931
+59,0.016447
+60,0.016999
+61,0.017603
+62,0.018273
+63,0.019028
+64,0.019884
+65,0.02086
+66,0.021976
+67,0.02325
+68,0.024702
+69,0.026348
+70,0.028203
+71,0.03028
+72,0.032591
+73,0.035148
+74,0.037962
+75,0.041045
+76,0.044413
+77,0.048078
+78,0.052059
+79,0.056372
+80,0.061036
+81,0.066074
+82,0.071506
+83,0.077357
+84,0.083652
+85,0.09042
+86,0.097694
+87,0.10551
+88,0.113909
+89,0.122939
+90,0.132652
+91,0.14342
+92,0.155186
+93,0.16789
+94,0.181474
+95,0.19588
+96,0.211049
+97,0.226923
+98,0.243443
+99,0.260551
+100,0.278189
+101,0.296297
+102,0.314819
+103,0.333694
+104,0.352865
+105,0.372273
+106,0.39186
+107,0.410849
+108,0.429112
+109,0.446544
+110,0.463061
+111,0.478604
+112,0.493137
+113,0.5
+114,0.5
+115,0.5
+116,0.5
+117,0.5
+118,0.5
+119,0.5
+120,1

@@ -1,13 +1,15 @@
 ---
-title: Applications of Computational Statistics Methods in Equity-linekd Insurnace
+title: Applications of Computational Statistics Methods in Equity-linked Insurance
   Pricing
-author: 'Peng Jin, Guanzhong Tao, Haoen Cui, Dayu Yao, Yuan Zhong'
+author: "Peng Jin, Guanzhong Tao, Haoen Cui, Dayu Yao, Yuan Zhong"
 date: "11/17/2017"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     toc: yes
+    toc_depth: 3
+  pdf_document:
+    toc: yes
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
@@ -29,10 +31,36 @@ knitr::kable(member_table, caption = "Group Members")
 ```
 
 ### Project Title 
-### Basic Description 
-#### STAT 428 Methods
-#### Application Areas 
-#### Data Involved 
-#### Main Question
-### Project Plan 
+Applications of Computational Statistics Methods in Equity-linked Insurance Pricing
 
+### Basic Descriptions
+#### STAT 428 Methods
++ **(Group 1)** Random Number Generation, Monte Carlo Inference
++ **(Group 2)** Bootstrap, MCMC 
+
+#### Application Areas and Project Scope 
+We aim to use simulation base methods to price equity-linked insurance products under percentile and equivalence principle. Risks involve mortality and uncertainty in investment returns. We will apply random number generation methods to an empirical life table to simulate projected remaining life time. Meanwhile, we will calibrate stock return data to infer future performance using MC and bootstrap methods. If time allows, we will delve into more complicated products including multiple decrements modeling using MCMC. Final products may also include interactive visualizations with R Shiny. 
+
+#### Data Involved 
++ **Mortality Table** for group life mortality estimation
+  1. Age
+  2. Remaining life in radix cohort
++ **Stock Market Data** for investment performance projection 
+  1. Date stamp
+  2. Index Value
+  
+### Project Plan 
+```{r,echo=FALSE}
+task_1 <- c("Data Collection", "Peng Jin", "Nov 19")
+task_2 <- c("Data Cleaning", "Haoen Cui", "Nov 20")
+task_3 <- c("Mortality Projection", "Guanzhong Tao, Dayu Yao", "Nov 25")
+task_4 <- c("Stock Return Projection", "Yuan Zhong, Dayu Yao", "Nov 28")
+task_5 <- c("Model Combination - Pricing", "Peng Jin, Guanzhong Tao", "Nov 30")
+task_6 <- c("Visualization (if time allows)", "Haoen Cui, Yuan Zhong", "Dec 2")
+task_7 <- c("Slides-Making", "Dayu Yao, Yuan Zhong", " Dec 5")
+task_8 <- c("Report Combination and Proofreading", "Everyone", "Dec 15")
+task_table <- rbind(task_1, task_2, task_3, task_4, task_5, task_6, task_7, task_8)
+colnames(task_table) <- c("Task", "Main Responsible Members", "Internal Due Date")
+rownames(task_table) <- c()
+knitr::kable(task_table, caption = "Tentative Project Plan")
+```

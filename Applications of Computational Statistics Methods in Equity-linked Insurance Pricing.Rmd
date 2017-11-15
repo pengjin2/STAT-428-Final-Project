@@ -1,0 +1,76 @@
+---
+title: Applications of Computational Statistics Methods in Equity-linked Insurance
+  Pricing
+author: "Peng Jin, Guanzhong Tao, Haoen Cui, Dayu Yao, Yuan Zhong"
+date: "November 13, 2017"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Data Preparation 
+
+####Data Import (Mortality Table)
+
+The data was download from The Human Mortality Database, a nonprofit organization that provides mortality data for researchers, students, and policy analysts. There are 39 countries' data available on the website, but this project is mainly focused on the USA.
+
+```{r,echo=T}
+male_mortaility<-read.table("C:/Users/Peng/Downloads/mltper_1x1.txt",skip=1,header=T)
+female_mortality<-read.table("C:/Users/Peng/Downloads/fltper_1x1.txt",skip=1,header=T)
+both_gender_mortality<-read.table("C:/Users/Peng/Downloads/bltper_1x1.txt",skip=1,header=T)
+```
+
+####Data Structure and Variable explanation
+
+```{r,echo=T}
+head(both_gender_mortality)##Data Structure
+names(both_gender_mortality)##Variable Names 
+```
+
+```{r,echo=FALSE}
+library(knitr)
+library(kableExtra)
+text_tbl <- data.frame(
+  Variables = names(both_gender_mortality),
+  Explanation = c("Year or range of years (for both period & cohort data)","Age group for n-year interval from exact age x to just before exact age x+n, where n=1, 4, 5, or infinite(open age interval)","Central death rate between ages x and x+n","Probability of death between ages x and x+n","Average length of survival between ages x and x+n for persons dying in the interval","Number of survivors at exact age x, assuming l(0) = 100,000","Number of deaths between ages x and x+n","Number of person-years lived between ages x and x+n","Number of person-years remaining after exact age x","Life expectancy at exact age x (in years)"
+  )
+)
+kable(text_tbl, "html") %>%
+  kable_styling(full_width = F) %>%
+  column_spec(1, bold = T, border_right = T,border_left=T) %>%
+  column_spec(2, width = "30em",border_right = T,background='pink')
+```
+
+####Data Import (Stock Index)
+
+The data was downloaded from "Yahoo Finance". The equity-linekd insurnace products are mainly based on the three biggest indices in the US: NASDAQ, S&P 500, and Dow Jones.
+
+```{r,echo=TRUE}
+dow_jones<-read.csv("C:/Users/Peng/Downloads/Dow Jones.csv")
+nasdaq<-read.csv("C:/Users/Peng/Downloads/NASDAQ.csv")
+s_p500<-read.csv("C:/Users/Peng/Downloads/S&P 500.csv")
+```
+
+####Data Structure and Variable explanation
+```{r,echo=TRUE}
+head(nasdaq)##Data Structure
+names(nasdaq)##variable names
+```
+```{r,echo=FALSE}
+text_tbl <- data.frame(
+  Variables = names(nasdaq),
+  Explanation = c("Stock Timestamp","Open Price","Highest Price","lowest Price","Closing Price","Adjusted Closing Price","Trading Volume"
+  )
+)
+kable(text_tbl, "html") %>%
+  kable_styling(full_width = F) %>%
+  column_spec(1, bold = T, border_right = T,border_left=T) %>%
+  column_spec(2, width = "30em",border_right = T,background='pink')
+```

@@ -1,7 +1,0 @@
-unnamed-chunk-1	read.table	T
-unnamed-chunk-2	both	head	names
-unnamed-chunk-3	%>%	both	c	column_spec	data.frame	F	kable	kable_styling	names	T
-unnamed-chunk-4	read.csv
-unnamed-chunk-5	head	names	nasdaq
-unnamed-chunk-6	%>%	c	column_spec	data.frame	F	kable	kable_styling	names	nasdaq	T
-unnamed-chunk-7	&	==	>	$	as.numeric	if	levels	male	max	return	which

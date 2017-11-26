@@ -226,24 +226,23 @@ div.tocify {
 
 <div id="data-preparation" class="section level3">
 <h3>Data Preparation</h3>
-<div id="data-importmortality-table" class="section level4">
-<h4>Data Import(Mortality Table)</h4>
+<div id="data-import-mortality-table" class="section level4">
+<h4>Data Import (Mortality Table)</h4>
 <p>The data was download from The Human Mortality Database, a nonprofit organization that provides mortality data for researchers, students, and policy analysts. There are 39 countries’ data available on the website, but this project is mainly focused on the USA.</p>
-<pre class="r"><code>male_mortaility&lt;-read.table(&quot;C:/Users/Peng/Downloads/mltper_1x1.txt&quot;,skip=1,header=T)
-female_mortality&lt;-read.table(&quot;C:/Users/Peng/Downloads/fltper_1x1.txt&quot;,skip=1,header=T)
-both_gender_mortality&lt;-read.table(&quot;C:/Users/Peng/Downloads/bltper_1x1.txt&quot;,skip=1,header=T)</code></pre>
+<pre class="r"><code>male&lt;-read.table(&quot;/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/mltper_1x1.txt&quot;,skip=1,header=T)
+female&lt;-read.table(&quot;/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/fltper_1x1.txt&quot;,skip=1,header=T)
+both&lt;-read.table(&quot;/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/bltper_1x1.txt&quot;,skip=1,header=T)</code></pre>
 </div>
 <div id="data-structure-and-variable-explanation" class="section level4">
 <h4>Data Structure and Variable explanation</h4>
-<pre class="r"><code>head(both_gender_mortality)##Data Structure</code></pre>
+<pre class="r"><code>head(both)##Data Structure</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["Year"],"name":[1],"type":["int"],"align":["right"]},{"label":["Age"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["mx"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["qx"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["ax"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["lx"],"name":[6],"type":["int"],"align":["right"]},{"label":["dx"],"name":[7],"type":["int"],"align":["right"]},{"label":["Lx"],"name":[8],"type":["int"],"align":["right"]},{"label":["Tx"],"name":[9],"type":["int"],"align":["right"]},{"label":["ex"],"name":[10],"type":["dbl"],"align":["right"]}],"data":[{"1":"1933","2":"0","3":"0.06167","4":"0.05883","5":"0.22","6":"100000","7":"5883","8":"95405","9":"6087966","10":"60.88"},{"1":"1933","2":"1","3":"0.00946","4":"0.00941","5":"0.50","6":"94117","7":"886","8":"93674","9":"5992562","10":"63.67"},{"1":"1933","2":"2","3":"0.00435","4":"0.00434","5":"0.50","6":"93231","7":"405","8":"93028","9":"5898888","10":"63.27"},{"1":"1933","2":"3","3":"0.00310","4":"0.00310","5":"0.50","6":"92826","7":"288","8":"92682","9":"5805860","10":"62.55"},{"1":"1933","2":"4","3":"0.00239","4":"0.00238","5":"0.50","6":"92538","7":"221","8":"92428","9":"5713178","10":"61.74"},{"1":"1933","2":"5","3":"0.00197","4":"0.00197","5":"0.50","6":"92318","7":"182","8":"92227","9":"5620750","10":"60.88"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<pre class="r"><code>names(both_gender_mortality)##Variable Names </code></pre>
+<pre class="r"><code>names(both)##Variable Names </code></pre>
 <pre><code>##  [1] &quot;Year&quot; &quot;Age&quot;  &quot;mx&quot;   &quot;qx&quot;   &quot;ax&quot;   &quot;lx&quot;   &quot;dx&quot;   &quot;Lx&quot;   &quot;Tx&quot;   &quot;ex&quot;</code></pre>
-<pre><code>## Warning: package 'kableExtra' was built under R version 3.4.2</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -339,19 +338,19 @@ Life expectancy at exact age x (in years)
 </tbody>
 </table>
 </div>
-<div id="data-importstock-index" class="section level4">
-<h4>Data Import(Stock Index)</h4>
+<div id="data-import-stock-index" class="section level4">
+<h4>Data Import (Stock Index)</h4>
 <p>The data was downloaded from “Yahoo Finance”. The equity-linekd insurnace products are mainly based on the three biggest indices in the US: NASDAQ, S&amp;P 500, and Dow Jones.</p>
-<pre class="r"><code>dow_jones&lt;-read.csv(&quot;C:/Users/Peng/Downloads/Dow Jones.csv&quot;)
-nasdaq&lt;-read.csv(&quot;C:/Users/Peng/Downloads/NASDAQ.csv&quot;)
-s_p500&lt;-read.csv(&quot;C:/Users/Peng/Downloads/S&amp;P 500.csv&quot;)</code></pre>
+<pre class="r"><code>dow_jones&lt;-read.csv(&quot;/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/Dow Jones.csv&quot;)
+nasdaq&lt;-read.csv(&quot;/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/NASDAQ.csv&quot;)
+s_p500&lt;-read.csv(&quot;/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/S&amp;P 500.csv&quot;)</code></pre>
 </div>
 <div id="data-structure-and-variable-explanation-1" class="section level4">
 <h4>Data Structure and Variable explanation</h4>
 <pre class="r"><code>head(nasdaq)##Data Structure</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Date"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Open"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["High"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Low"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Adj.Close"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Volume"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"2001-01-02","2":"2474.16","3":"2474.16","4":"2273.07","5":"2291.86","6":"2291.86","7":"1918930000"},{"1":"2001-01-03","2":"2254.56","3":"2618.03","4":"2251.71","5":"2616.69","6":"2616.69","7":"3188000000"},{"1":"2001-01-04","2":"2593.96","3":"2644.80","4":"2549.83","5":"2566.83","6":"2566.83","7":"2610680000"},{"1":"2001-01-05","2":"2573.11","3":"2574.62","4":"2395.39","5":"2407.65","6":"2407.65","7":"2104670000"},{"1":"2001-01-08","2":"2388.72","3":"2397.06","4":"2299.65","5":"2395.92","6":"2395.92","7":"1850590000"},{"1":"2001-01-09","2":"2424.69","3":"2474.16","4":"2406.08","5":"2441.30","6":"2441.30","7":"1975130000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["Date"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Open"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["High"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Low"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Adj.Close"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Volume"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"2001-01-02","2":"2474","3":"2474","4":"2273","5":"2292","6":"2292","7":"1918930000"},{"1":"2001-01-03","2":"2255","3":"2618","4":"2252","5":"2617","6":"2617","7":"3188000000"},{"1":"2001-01-04","2":"2594","3":"2645","4":"2550","5":"2567","6":"2567","7":"2610680000"},{"1":"2001-01-05","2":"2573","3":"2575","4":"2395","5":"2408","6":"2408","7":"2104670000"},{"1":"2001-01-08","2":"2389","3":"2397","4":"2300","5":"2396","6":"2396","7":"1850590000"},{"1":"2001-01-09","2":"2425","3":"2474","4":"2406","5":"2441","6":"2441","7":"1975130000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code>names(nasdaq)##variable names</code></pre>
@@ -428,6 +427,10 @@ Trading Volume
 </tbody>
 </table>
 </div>
+</div>
+<div id="method-explannation" class="section level3">
+<h3>Method Explannation</h3>
+<pre><code>## [1] 0.05517</code></pre>
 </div>
 
 

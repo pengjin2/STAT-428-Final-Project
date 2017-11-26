@@ -9,10 +9,18 @@ output:
     toc_depth: 3
     toc_float: yes
     df_print: paged
+runtime: shiny
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+options(scipen = 1, digits = 4, width = 80)
+library(knitr)
+library(kableExtra)
+library(quantmod)
+library(reshape2)
+opts_chunk$set(echo=FALSE,
+               cache=TRUE, autodep=TRUE, cache.comments=FALSE,
+               message=FALSE, warning=FALSE)
 ```
 
 ###Data Preparation 
@@ -22,23 +30,21 @@ knitr::opts_chunk$set(echo = TRUE)
 The data was download from The Human Mortality Database, a nonprofit organization that provides mortality data for researchers, students, and policy analysts. There are 39 countries' data available on the website, but this project is mainly focused on the USA.
 
 ```{r,echo=T}
-male_mortaility<-read.table("C:/Users/Peng/Downloads/mltper_1x1.txt",skip=1,header=T)
-female_mortality<-read.table("C:/Users/Peng/Downloads/fltper_1x1.txt",skip=1,header=T)
-both_gender_mortality<-read.table("C:/Users/Peng/Downloads/bltper_1x1.txt",skip=1,header=T)
+male<-read.table("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/mltper_1x1.txt",skip=1,header=T)
+female<-read.table("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/fltper_1x1.txt",skip=1,header=T)
+both<-read.table("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/bltper_1x1.txt",skip=1,header=T)
 ```
 
 ####Data Structure and Variable explanation
 
 ```{r,echo=T}
-head(both_gender_mortality)##Data Structure
-names(both_gender_mortality)##Variable Names 
+head(both)##Data Structure
+names(both)##Variable Names 
 ```
 
 ```{r,echo=FALSE}
-library(knitr)
-library(kableExtra)
 text_tbl <- data.frame(
-  Variables = names(both_gender_mortality),
+  Variables = names(both),
   Explanation = c("Year or range of years (for both period & cohort data)","Age group for n-year interval from exact age x to just before exact age x+n, where n=1, 4, 5, or infinite(open age interval)","Central death rate between ages x and x+n","Probability of death between ages x and x+n","Average length of survival between ages x and x+n for persons dying in the interval","Number of survivors at exact age x, assuming l(0) = 100,000","Number of deaths between ages x and x+n","Number of person-years lived between ages x and x+n","Number of person-years remaining after exact age x","Life expectancy at exact age x (in years)"
   )
 )
@@ -53,9 +59,9 @@ kable(text_tbl, "html") %>%
 The data was downloaded from "Yahoo Finance". The equity-linekd insurnace products are mainly based on the three biggest indices in the US: NASDAQ, S&P 500, and Dow Jones.
 
 ```{r,echo=TRUE}
-dow_jones<-read.csv("C:/Users/Peng/Downloads/Dow Jones.csv")
-nasdaq<-read.csv("C:/Users/Peng/Downloads/NASDAQ.csv")
-s_p500<-read.csv("C:/Users/Peng/Downloads/S&P 500.csv")
+dow_jones<-read.csv("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/Dow Jones.csv")
+nasdaq<-read.csv("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/NASDAQ.csv")
+s_p500<-read.csv("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/S&P 500.csv")
 ```
 
 ####Data Structure and Variable explanation
@@ -73,4 +79,101 @@ kable(text_tbl, "html") %>%
   kable_styling(full_width = F) %>%
   column_spec(1, bold = T, border_right = T,border_left=T) %>%
   column_spec(2, width = "30em",border_right = T,background='pink')
+```
+
+###Method Explannation
+
+```{r,cache=FALSE,echo=FALSE}
+#mortality function
+mortality<-function(age,year,length,gender){
+  if((age+length)>max(as.numeric(levels(male$Age)),na.rm = TRUE)){return("invalid inputs")}
+  a<-which(gender$Age==age & gender$Year==year)
+  tqx<-(gender$lx[a]-gender$lx[a+length])/gender$lx[a]
+  return(tqx)
+}
+```
+
+```{r,cache=FALSE}
+library(shiny)
+library(ggplot2)
+ui <- fluidPage(
+  titlePanel("Guaranteed Minimum Maturity Benefit"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Select a stock to examine. 
+        Information will be collected from Yahoo finance."),
+      
+      textInput("symb", "Symbol", "SPY"),
+      
+      dateRangeInput("dates", 
+                     "Insured Period",
+                     start = "2013-01-01", 
+                     end = as.character(Sys.Date())),
+      
+      numericInput("num", "Premium Invested", value = 100),
+      
+      checkboxInput("log","Plot y Axis on Log Scale"),
+      
+     checkboxInput("St", "Real Time Stock Value (St)", 
+                    value = TRUE),
+      checkboxInput("Ft","Market Value of the policy holder's subaccounts (Ft)",
+                    value = FALSE),
+     checkboxInput("Gt","Guranteed Value (Gt)", value=FALSE)),
+  
+    mainPanel(plotOutput("plot"),h3(textOutput("final")))
+  )
+)
+# Server logic
+server <- function(input, output) {
+  
+  dataInput <- reactive({
+      a_1<-getSymbols(input$symb, src = "yahoo",
+                         from = input$dates[1],
+                         to = input$dates[2],
+                         auto.assign = FALSE)
+      a<-as.data.frame(a_1)
+      n<-length(a[,1])
+      Ft_col<-Gt_val<-numeric(n)
+    for (i in 1:length(Ft_col)){
+      Ft_col[i]<-input$num*(a[,2][i]/a[,2][1])*exp(-i*0.02/365)
+      Gt_val[i]<-max(Ft_col[i],input$num*exp(i*0.01/365))
+    }
+    
+    ind<-c()
+    if(input$St==TRUE){ind<-c(ind,2)}
+    if(input$Ft==TRUE){ind<-c(ind,3)}
+    if(input$Gt==TRUE){ind<-c(ind,4)}
+    ind<-c(1,ind)
+    dates=index(a_1)
+    St=a[,4]
+    Ft=Ft_col
+    Gt=Gt_val
+    all_data<-data.frame(dates,St,Ft,Gt)[,ind]
+    final_payout<-max(Gt_val[n],Ft_col[n])
+    if(input$log==FALSE){
+      list(all_data,final_payout)}
+    else{
+      list(data.frame(dates,log(St),log(Ft),log(Gt))[,ind],final_payout)
+    }
+  })
+  output$plot <- renderPlot({
+    df <- melt(dataInput()[[1]], "dates")
+    X<-as.Date(dataInput()[[1]][n,1])
+    Y<-dataInput()[[2]]
+    df2<-data.frame(x=X,y=Y)
+    ggplot(df, aes(x=dates, y=value, color=variable)) + 
+      geom_line()
+      
+     
+  })
+  output$final<-renderPrint({
+    
+    paste("Your Initial Premium Investment is",input$num," and your account balance will be",round(dataInput()[[2]],2),"after the designated period")
+  })
+  
+}
+
+# Run the app
+shinyApp(ui, server)
 ```

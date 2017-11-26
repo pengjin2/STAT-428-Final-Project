@@ -14,10 +14,8 @@ runtime: shiny
 
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
 options(scipen = 1, digits = 4, width = 80)
-library(knitr)
-library(kableExtra)
-library(quantmod)
-library(reshape2)
+package_list <- c("tidyverse", "knitr", "kableExtra", "quantmod", "reshape2", "shiny")
+lapply(package_list, require, character.only = TRUE)
 opts_chunk$set(echo=FALSE,
                cache=TRUE, autodep=TRUE, cache.comments=FALSE,
                message=FALSE, warning=FALSE)
@@ -30,9 +28,9 @@ opts_chunk$set(echo=FALSE,
 The data was download from The Human Mortality Database, a nonprofit organization that provides mortality data for researchers, students, and policy analysts. There are 39 countries' data available on the website, but this project is mainly focused on the USA.
 
 ```{r,echo=T}
-male<-read.table("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/mltper_1x1.txt",skip=1,header=T)
-female<-read.table("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/fltper_1x1.txt",skip=1,header=T)
-both<-read.table("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/bltper_1x1.txt",skip=1,header=T)
+male   <- read.table("data/mltper_1x1.txt",skip=1,header=T)
+female <- read.table("data/fltper_1x1.txt",skip=1,header=T)
+both   <- read.table("data/bltper_1x1.txt",skip=1,header=T)
 ```
 
 ####Data Structure and Variable explanation
@@ -59,9 +57,9 @@ kable(text_tbl, "html") %>%
 The data was downloaded from "Yahoo Finance". The equity-linekd insurnace products are mainly based on the three biggest indices in the US: NASDAQ, S&P 500, and Dow Jones.
 
 ```{r,echo=TRUE}
-dow_jones<-read.csv("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/Dow Jones.csv")
-nasdaq<-read.csv("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/NASDAQ.csv")
-s_p500<-read.csv("/Users/Peng/Desktop/STAT428/STAT-428-Final-Project/S&P 500.csv")
+dow_jones <- read.csv("data/Dow Jones.csv")
+nasdaq    <- read.csv("data/NASDAQ.csv")
+s_p500    <- read.csv("data/S&P 500.csv")
 ```
 
 ####Data Structure and Variable explanation
@@ -94,8 +92,6 @@ mortality<-function(age,year,length,gender){
 ```
 
 ```{r,cache=FALSE}
-library(shiny)
-library(ggplot2)
 ui <- fluidPage(
   titlePanel("Guaranteed Minimum Maturity Benefit"),
   

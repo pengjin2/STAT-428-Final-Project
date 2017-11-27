@@ -1,7 +1,7 @@
-library(tidyverse)
-library(reshape2)
-library(shiny)
-library(quantmod)
+library("tidyverse")
+library("reshape2")
+library("shiny")
+library("quantmod")
 
 ui <- fluidPage(
   titlePanel("Guaranteed Minimum Maturity Benefit"),
@@ -35,16 +35,17 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   dataInput <- reactive({
-    a_1<-getSymbols(input$symb, src = "yahoo",
+    a_1<-getSymbols(input$symb, 
+                    src  = "yahoo",
                     from = input$dates[1],
-                    to = input$dates[2],
+                    to   = input$dates[2],
                     auto.assign = FALSE)
-    a<-as.data.frame(a_1)
-    n<-length(a[,1])
+    a <- as.data.frame(a_1)
+    n <- length(a_1[,2])
     Ft_col<-Gt_val<-numeric(n)
     for (i in 1:length(Ft_col)){
-      Ft_col[i]<-input$num*(a[,2][i]/a[,2][1])*exp(-i*0.02/365)
-      Gt_val[i]<-max(Ft_col[i],input$num*exp(i*0.01/365))
+      Ft_col[i] <- input$num*(a[,2][i]/a[,2][1])*exp(-i*0.02/365)
+      Gt_val[i] <- max(Ft_col[i],input$num*exp(i*0.01/365))
     }
     
     ind<-c()
@@ -66,9 +67,6 @@ server <- function(input, output) {
   })
   output$plot <- renderPlot({
     df <- melt(dataInput()[[1]], "dates")
-    X<-as.Date(dataInput()[[1]][n,1])
-    Y<-dataInput()[[2]]
-    df2<-data.frame(x=X,y=Y)
     ggplot(df, aes(x=dates, y=value, color=variable)) + 
       geom_line()
     

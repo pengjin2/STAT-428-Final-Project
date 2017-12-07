@@ -1,0 +1,7 @@
+require("quantmod")
+require("zoo")
+require("xts")
+require("fitdistrplus")
+require("scales")
+require("shiny")
+require("tidyverse")

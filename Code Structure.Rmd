@@ -1,0 +1,132 @@
+---
+title: "Code Structure"
+author: "Haoen Cui, hcui10"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Sources of Risks
+
+### Overview
+We consider three sources of `risk`: decrements, investment return, interest rate. We allow them to have some dependence, but will not model them jointly. For each type of risk, we will have three main methods:  
+
+1. `risk.clean.data(raw.data)`  
+    * Args: raw input data   
+    * Return: cleaned data for the following functions to use  
+2. `risk.calibrate(hist.data, model)`   
+    * Args: cleaned historic data, model type  
+        + each model type should have its helper function `risk.calibrate.model(hist.data)`  
+    * Return: a list of estimated parameters and accuracy estimates (e.g. using bootstrap methods)  
+3. `risk.predict(model, param, max.length, n = 100)`  
+    * Args: model type, associated parameters , time horizon for simulaiton, and number of simulation to run
+        + can have a helper function `risk.simulate(model, param, max.length)` to just simulate one realization  
+    * Return: a list of simulation result up to `t.now + max.length` containing a matrix of `n` simulations using the `model` type and associated `param`   
+4. other helper functions as necessary
+
+Notes:   
+
+* all time units should be in years. For example, $\frac{1}{12}$ is 1 month  
+* functions should be well-documented  
+```{r}
+# use tidy formats, e.g. dplyr, tibbles/data.frame
+# require("tidyverse")
+
+# function definition
+some.function <- function(...) {
+  # short description of the funciton
+  # 
+  # Args:
+  #   arg1: meaning of arg1
+  #
+  # Return:
+  #   ele1: meaning of ele1
+  
+  #... some code ...
+  
+  return(list())
+}
+```
+
+### Decrement
+
+* The second funciton will be modified, `risk.calibrate(hist.data, source, model)` should take in one more parameter `source` from `c("mortality", "lapse", "annuitization")` where the associated models are `c("life-table")`, `c("const")`, and `c("const")`. 
+
+### Investment Return
+
+* `risk.clean.data(raw.data)` should take care of dividends and splits  
+* Assume stock return follows a grometric Brownian motion for now  
+
+### Interets Rate
+
+* Only supports Vasicek model for now  
+* The third funciton will be modified, `risk.predict(model, param, max.length, n = 100)` should return predictions of short-term rate, yield curve, and aero-coupon bond price  
+
+## Methods in STAT 428
+
+Naming convention: `STAT428.function.name(...)`.  
+
+### Random Number Generation 
+`STAT428.rdist(n, method, method.param)` accepts `n` as output sample length, `method` as method type (e.g. `"MCMC"`) and, `method.param` as associated parameters, then returns a generated sample of length `n` using the method specified. Methods should at least include the following:  
+
+* Inverse Transformation Method  
+* Acceptance-Rejection Method  
+* Markov Chain Monte Carlo
+```{r}
+rdist=function(n,method,method.parameter){
+  if (method=="inverse"){
+    u=runif(n)
+    x=method.parameter$invCDF(u)
+    return(x)
+  }
+  else if (method=="ar"){
+    k=0
+    y=numeric(n)
+    if (c=="auto"){
+      generated_x=method.parameter$rproposal(10000)
+      fxgx=method.parameter$dtarget(generated_x)/method.parameter$dproposal(generated_x)
+      c=max(fxgx)
+    }else{c=method.parameter$c}
+    while(k<n){
+      u=runif(1)
+      x=method.parameter$dproposal(method.parameter$rproposal(1))#function that generate x from proposal
+      if (dtarget(x)/(c*dproposal(x))>u){
+        k=k+1
+        y[k]=x
+      }
+    }
+    return(y)
+  }
+  else if (method=="mcmc"){
+    x = numeric(n)
+    x[1] = method.parameter$rproposal(1,df=1)#might need to specify chisq, t, or other ones 
+    u = runif(n)
+    for (i in 2:n) { 
+    xt = x[i-1]
+    y = method.parameter$rproposal(n, df=xt)
+    num = method.parameter$dtarget(y) * method.parameter$dproposal(xt, df = y) 
+    den = method.parameter$dtarget(xt) * method.parameter$dproposal(y, df = xt) 
+    if (u[i] <= num/den) x[i] = y else {
+      x[i] = xt
+      }
+    }
+    return(x)
+  }
+  }
+```
+
+### Bootstrap
+Use `boot::boot()` and/or `broom::bootstrapping()`
+
+### Optimization
+Depends on needs of parameter estimation of the three risks. Potential methods are listed below:  
+
+* solve $f(x)=0$ using root bracketing (e.g. bisection method, Brent’s method)   
+* solve $f(x)=0$ using iterative methods (e.g. Newton-Raphson method)  
+* optimize $\min_{x \in \mathbb{R}^n} f(x)$ using iterative methods (e.g. Newton's method)  
+* parameter estimation using E-M algorithm  

@@ -1,80 +1,432 @@
-library("tidyverse")
-library("reshape2")
-library("shiny")
-library("quantmod")
+source("decrement.R")
+source("investment.R")
+source("discount rate.R")
+require("shiny")
+require("tidyverse")
 
 ui <- fluidPage(
-  titlePanel("Guaranteed Minimum Maturity Benefit"),
+  # App title ----
+  titlePanel("Profit Testing of Variable Annuity Products via Simulation"),
   
+  # Sidebar layout with input and output definitions ----
   sidebarLayout(
-    sidebarPanel(
-      helpText("Select a stock to examine. 
-               Information will be collected from Yahoo finance."),
-      
-      textInput("symb", "Symbol", "SPY"),
-      
-      dateRangeInput("dates", 
-                     "Insured Period",
-                     start = "2013-01-01", 
-                     end = as.character(Sys.Date())),
-      
-      numericInput("num", "Premium Invested", value = 100),
-      
-      checkboxInput("log","Plot y Axis on Log Scale"),
-      
-      checkboxInput("St", "Real Time Stock Value (St)", 
-                    value = TRUE),
-      checkboxInput("Ft","Market Value of the policy holder's subaccounts (Ft)",
-                    value = FALSE),
-      checkboxInput("Gt","Guranteed Value (Gt)", value=FALSE)),
     
-    mainPanel(plotOutput("plot"),h3(textOutput("final")))
+    # Sidebar panel for inputs ----
+    sidebarPanel(
+      
+      # Instructions ----
+      helpText("Set assumptions below."),
+      
+      # Decrement Modeling Section ---
+      wellPanel(
+        
+        # Instructions ----
+        helpText("Decrement Section"),
+        
+        # Input: Select a file ----
+        fileInput(inputId = "life.table", 
+                  label = "Upload CSV File: Empirical Life Table",
+                  multiple = FALSE,
+                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")) 
+      
+        # # Input: Enter a number ----
+        # numericInput(inputId = "lapse.const", label = "Enter Periodic Lapse Rate (in decimal)", 
+        #              value = 0.03, step = 0.01), 
+        # 
+        # # Input: Enter a number ----
+        # numericInput(inputId = "ann.const", label = "Enter Periodic Annuitization Rate (in decimal)", 
+        #              value = 0.01, step = 0.01)
+    
+        # --- Decrement Modeling Section
+      ),
+      
+      # Equity Investment Section ---
+      wellPanel(
+
+        # Instructions ----
+        helpText("Equity Investment Section"),
+        
+        # Input: controler for the following uiOutput element
+        selectInput(inputId = "inv.select", label = "Approach",
+                    choices = c("Calibrate a New Model" = "calibrate", 
+                                "Setup a Constant Model" = "const", 
+                                "Upload an Existing Prediction" = "upload"), 
+                    selected = "calibrate"), 
+        
+        # Output: dynamic ui element for discount rate section
+        uiOutput(outputId = "inv.section")
+
+        # --- Equity Investment Section
+      ),
+      
+      # Discount Rate Section ---
+      wellPanel(
+        
+        # Instructions ----
+        helpText("Discount Rate Section"),
+        
+        # Input: controler for the following uiOutput element
+        selectInput(inputId = "disc.select", label = "Approach",
+                    choices = c("Calibrate a New Model" = "calibrate", 
+                                "Setup a Constant Model" = "const", 
+                                "Upload an Existing Prediction" = "upload"), 
+                    selected = "calibrate"), 
+        
+        # Output: dynamic ui element for discount rate section
+        uiOutput(outputId = "disc.section")
+        
+        # --- Discount Rate Section
+      ),
+      
+      
+      # Input: Slider for the number of observations to generate ----
+      sliderInput(inputId = "sim.num", label = "Number of Simulations:",
+                  min = 1, max = 500, 
+                  # initial value of the slider
+                  value = 100), 
+      
+      # Input: data range for prediction
+      dateRangeInput(inputId = "pred.dates", 
+                     label = "Prediction Horizon",
+                     start = as.character(Sys.Date()), 
+                     end = as.character(Sys.Date() + lubridate::years(10))), 
+      
+      # Input: time increment for analysis
+      radioButtons(inputId = "dt", label = "Frequency of Analysis", 
+                   choices = c("Monthly" = "monthly", 
+                               "Quarterly" = "quarterly", 
+                               "Annually" = "annually"), 
+                   selected = "monthly"), 
+      
+      width = 3 # a quarter of the screen
+    # --- Sidebar panel for inputs
+    ),
+    
+    # Main panel for displaying outputs ----
+    mainPanel(
+      
+      # Output: Tabset w/ plot, summary, and table ----
+      navbarPage("SUBSECTION",
+                  tabPanel("Dashboard", plotOutput("plot")),
+                  navbarMenu(title = "Modeling", 
+                    tabPanel("Decrements", h3("Decrements")),
+                    tabPanel("Equity Return", 
+                             titlePanel("Equity Investment Model"), 
+                             tabsetPanel(type = "tabs", 
+                                         # tabPanel("Parameter Estimations"), 
+                                         tabPanel("Return Predicitons", 
+                                                  fluidRow(
+                                                      fluidRow(
+                                                        column(
+                                                          width = 10, 
+                                                          plotOutput(
+                                                            outputId = "inv.plot.fix", 
+                                                            brush = 
+                                                              brushOpts(
+                                                                id = "inv.plot.fix.brush",
+                                                                resetOnNew = TRUE) # set up brush for interactive plot
+                                                            )
+                                                          )
+                                                        ), 
+                                                      fluidRow(
+                                                        column(
+                                                          width = 10, 
+                                                          plotOutput(
+                                                            outputId = "inv.plot.zoom", 
+                                                            hover = hoverOpts(id = "inv.plot.zoom.hover"))), 
+                                                        column(
+                                                          width = 2, 
+                                                          htmlOutput(outputId = "inv.plot.zoom.info"))
+                                                        ))))), 
+                 tabPanel("Discount Rate", 
+                          titlePanel("Discount Rate Model"), 
+                          tabsetPanel(type = "tabs", 
+                                      # tabPanel("Parameter Estimations"), 
+                                      tabPanel("Rate Predicitons", 
+                                               fluidRow(
+                                                 fluidRow(
+                                                   column(
+                                                     width = 10, 
+                                                     plotOutput(
+                                                       outputId = "disc.plot.fix", 
+                                                       brush = 
+                                                         brushOpts(
+                                                           id = "disc.plot.fix.brush",
+                                                           clip = TRUE, 
+                                                           resetOnNew = TRUE) # set up brush for interactive plot
+                                                     )
+                                                   )
+                                                 ), 
+                                                 fluidRow(
+                                                   column(
+                                                     width = 10, 
+                                                     plotOutput(
+                                                       outputId = "disc.plot.zoom", 
+                                                       hover = hoverOpts(id = "disc.plot.zoom.hover"))), 
+                                                   column(
+                                                     width = 2, 
+                                                     htmlOutput(outputId = "disc.plot.zoom.info"))
+                                                 ), 
+                                                 fluidRow(
+                                                   plotOutput(outputId = "disc.plot.ZCBondPrice"), 
+                                                   plotOutput(outputId = "disc.plot.YieldCurve")
+                                                 )
+                                                 ))))), 
+                  navbarMenu(title = "Profit Testing", 
+                    tabPanel("Projected Account Values"), 
+                    tabPanel("Projected Cash Flows"), 
+                    tabPanel("Projected Distributable Earnings"), 
+                    tabPanel("Profit Testing"))
+      )
+    
+    # --- Main panel for displaying outputs  
     )
+    
+  # --- Sidebar layout with input and output definitions  
+  )
 )
 # Server logic
 server <- function(input, output) {
   
-  dataInput <- reactive({
-    a_1<-getSymbols(input$symb, 
-                    src  = "yahoo",
-                    from = input$dates[1],
-                    to   = input$dates[2],
-                    auto.assign = FALSE)
-    a <- as.data.frame(a_1)
-    n <- length(a_1[,2])
-    Ft_col<-Gt_val<-numeric(n)
-    for (i in 1:length(Ft_col)){
-      Ft_col[i] <- input$num*(a[,2][i]/a[,2][1])*exp(-i*0.02/365)
-      Gt_val[i] <- max(Ft_col[i],input$num*exp(i*0.01/365))
-    }
+  ##############################################################################
+  ### DECREMENT SECTION
+  ##############################################################################
+  
+  
+  ##############################################################################
+  ### INVESTMENT SECTION
+  ##############################################################################
+  
+  # Output: render equity investment section UI --- 
+  output$inv.section <- renderUI({
     
-    ind<-c()
-    if(input$St==TRUE){ind<-c(ind,2)}
-    if(input$Ft==TRUE){ind<-c(ind,3)}
-    if(input$Gt==TRUE){ind<-c(ind,4)}
-    ind<-c(1,ind)
-    dates=index(a_1)
-    St=a[,4]
-    Ft=Ft_col
-    Gt=Gt_val
-    all_data<-data.frame(dates,St,Ft,Gt)[,ind]
-    final_payout<-max(Gt_val[n],Ft_col[n])
-    if(input$log==FALSE){
-      list(all_data,final_payout)}
-    else{
-      list(data.frame(dates,log(St),log(Ft),log(Gt))[,ind],final_payout)
+    if (is.null(input$inv.select))
+      return()
+    
+    switch(input$inv.select, 
+           "calibrate" = tagList(
+             # Input: select model type --- 
+             radioButtons(inputId = "inv.model", label = "Select Model Type", 
+                          choices = c("Geometric Brownian Motion" = "GBM"), 
+                          selected = "GBM"), 
+             # Input: index symbol for equity investment ---- 
+             textInput(inputId = "inv.index", label = "Equity Investment Index", 
+                       value = "SPY"),
+             # Input: data range for calibration
+             dateRangeInput(inputId = "inv.dates", 
+                            label = "Equity Return Calibration Period",
+                            start = "2013-01-01", 
+                            end = as.character(Sys.Date()))
+           ), 
+           "upload" = 
+             # Input: select a file ---- 
+           fileInput(inputId = "inv.pred.file", 
+                     label = "Upload CSV File: Projected Equity Returns", 
+                     multiple = FALSE, 
+                     accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")), 
+           "const" =
+             # Input: input a constant number percentage as future equity return
+             numericInput(inputId = "inv.const", 
+                          label = "Input Constant Future Return (in decimal)", 
+                          value = 1.00, step = 0.01)
+    )
+    
+    # --- Depending on input$inv.select, we'll generate different inv.section 
+  })
+  
+  
+  data.inv <- reactive({
+    inv.clean.data(ticker = input$inv.index, 
+                   src = "yahoo", 
+                   dt = input$dt, 
+                   start_date = input$inv.dates[1], 
+                   end_date = input$inv.dates[2])
+  })
+  
+  param.est.inv <- reactive({
+    inv.calibrate(hist.data = data.inv(), model = input$inv.model)
+  })
+  
+  model.predict.inv <- reactive({
+    inv.predict(hist.data = data.inv(), 
+                model = input$inv.model, 
+                param = param.est.inv(), 
+                sim.length = 
+                  as.numeric(substr(input$inv.dates[2], start = 1, stop = 4)) - 
+                  as.numeric(substr(input$inv.dates[1], start = 1, stop = 4)), 
+                n = input$sim.num, 
+                dt = input$dt)
+  })
+  
+  output$inv.plot.fix <- renderPlot({
+    inv.plot(hist.data = data.inv(), 
+             model.pred = model.predict.inv(), 
+             conf = 0.95, 
+             x.coord.interact = NULL, 
+             y.coord.interact = NULL)
+  })
+  
+  inv.plot.zoom.ranges <- reactiveValues(x = NULL, y = NULL)
+  
+  output$inv.plot.zoom <- renderPlot({
+    inv.plot(hist.data = data.inv(), 
+             model.pred = model.predict.inv(), 
+             conf = 0.95, 
+             x.coord.interact = inv.plot.zoom.ranges$x, 
+             y.coord.interact = inv.plot.zoom.ranges$y)
+  })
+  
+  # When a double-click happens, check if there's a brush on the plot.
+  # If so, zoom to the brush bounds; if not, reset the zoom.
+  observe({
+    brush <- input$inv.plot.fix.brush
+    if (!is.null(brush)) {
+      inv.plot.zoom.ranges$x <- c(brush$xmin, brush$xmax)
+      inv.plot.zoom.ranges$y <- c(brush$ymin, brush$ymax)
+      
+    } else {
+      inv.plot.zoom.ranges$x <- NULL
+      inv.plot.zoom.ranges$y <- NULL
     }
   })
-  output$plot <- renderPlot({
-    df <- melt(dataInput()[[1]], "dates")
-    ggplot(df, aes(x=dates, y=value, color=variable)) + 
-      geom_line()
-    
-    
+  
+  output$inv.plot.zoom.info <- renderUI({
+    HTML(paste(
+      "<em>Mouse Hover On ...</em>", 
+      sprintf("Time: %s", 
+              ifelse(is.null(input$inv.plot.zoom.hover$x), "NULL", 
+                     as.character(as.Date(input$inv.plot.zoom.hover$x, origin = "1970-01-01")))), 
+      sprintf("Value: %s", format(input$inv.plot.zoom.hover$y)), 
+      sep = "<br/>"))
   })
-  output$final<-renderPrint({
+  
+  
+  ##############################################################################
+  ### DISCOUNT RATE SECTION
+  ##############################################################################
+  
+  # Output: render discount rate section UI --- 
+  output$disc.section <- renderUI({
     
-    paste("Your Initial Premium Investment is",input$num," and your account balance will be",round(dataInput()[[2]],2),"after the designated period")
+    if (is.null(input$disc.select))
+      return()
+    
+    switch(input$disc.select, 
+           "calibrate" = tagList(
+             # Input: select model type --- 
+             radioButtons(inputId = "disc.model", label = "Select Model Type", 
+                          choices = c("Vasicek" = "vasicek"), 
+                          selected = "vasicek"), 
+             # Input: index symbol for discount rate ---- 
+             textInput(inputId = "disc.index", label = "Discount Rate Index", 
+                       value = "DGS10"),
+             # Input: data range for calibration
+             dateRangeInput(inputId = "disc.dates", 
+                            label = "Discount Rate Calibration Period",
+                            start = "2013-01-01", 
+                            end = as.character(Sys.Date()))
+           ), 
+           "upload" = 
+             # Input: select a file ---- 
+           fileInput(inputId = "disc.pred.file", 
+                     label = "Upload CSV File: Projected Discount Rate", 
+                     multiple = FALSE, 
+                     accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")), 
+           "const" =
+             # Input: input a constant number percentage as future discount rate
+             numericInput(inputId = "disc.const", 
+                          label = "Input Constant Future Discount Rate (in decimal)", 
+                          value = 0.05, step = 0.01)
+    )
+    
+    # --- Depending on input$disc.select, we'll generate different disc.section 
+  })
+  
+  data.disc <- reactive({
+    disc.clean.data(
+      ticker = input$disc.index, 
+      src = "FRED", 
+      dt = input$dt, 
+      start.date = input$disc.dates[1], 
+      end.date = input$disc.dates[2])
+  })
+  
+  model.fit.disc <- reactive({
+    disc.calibrate(hist.data = data.disc(), model = input$disc.model, dt = input$dt)
+  })
+  
+  model.predict.disc <- reactive({
+    disc.predict(
+      model.fit = model.fit.disc(), 
+      sim.length = 
+        as.numeric(substr(input$disc.dates[2], start = 1, stop = 4)) - 
+        as.numeric(substr(input$disc.dates[1], start = 1, stop = 4)), 
+      n = input$sim.num)
+  })
+  
+  output$disc.plot.fix <- renderPlot({
+    disc.plot.short.rate.helper(
+      hist.data = data.disc(), 
+      model.pred = model.predict.disc(), 
+      conf = 0.95, 
+      x.coord.interact = NULL, 
+      y.coord.interact = NULL)
+  })
+  
+  disc.plot.zoom.ranges <- reactiveValues(x = NULL, y = NULL)
+  
+  output$disc.plot.zoom <- renderPlot({
+    disc.plot.short.rate.helper(
+      hist.data = data.disc(), 
+      model.pred = model.predict.disc(), 
+      conf = 0.95, 
+      x.coord.interact = disc.plot.zoom.ranges$x, 
+      y.coord.interact = disc.plot.zoom.ranges$y)
+  })
+  
+  # When a double-click happens, check if there's a brush on the plot.
+  # If so, zoom to the brush bounds; if not, reset the zoom.
+  observe({
+    brush <- input$disc.plot.fix.brush
+    if (!is.null(brush)) {
+      disc.plot.zoom.ranges$x <- c(brush$xmin, brush$xmax)
+      disc.plot.zoom.ranges$y <- c(brush$ymin, brush$ymax)
+      
+    } else {
+      disc.plot.zoom.ranges$x <- NULL
+      disc.plot.zoom.ranges$y <- NULL
+    }
+  })
+  
+  output$disc.plot.zoom.info <- renderUI({
+    digits <- 4
+    HTML(paste(
+      "<em>Mouse Hover On ...</em>", 
+      sprintf("Time: %s", 
+              ifelse(is.null(input$disc.plot.zoom.hover$x), "NULL", 
+                     as.character(as.Date(input$disc.plot.zoom.hover$x, origin = "1970-01-01")))), 
+      sprintf("Rate: %s %%", format(round(input$disc.plot.zoom.hover$y*(10^(digits+2)))/(10^digits))), 
+      sep = "<br/>"))
+  })
+  
+  output$disc.plot.ZCBondPrice <- renderPlot({
+    disc.plot(
+      hist.data = data.disc(), 
+      model.pred = model.predict.disc(), 
+      plot.type = c("zero-coupon-bond-price"), 
+      conf = 0.95, 
+      x.coord.interact = NULL, 
+      y.coord.interact = NULL)
+  })
+  
+  output$disc.plot.YieldCurve <- renderPlot({
+    disc.plot(
+      hist.data = data.disc(), 
+      model.pred = model.predict.disc(), 
+      plot.type = c("yield-curve"), 
+      conf = 0.95, 
+      x.coord.interact = NULL, 
+      y.coord.interact = NULL)
   })
   
 }

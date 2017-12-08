@@ -1,0 +1,138 @@
+---
+title: 'Actuarial Pricing of Equity-Linked Insurance via Simulation'
+short-title: "Pricing of ELI"
+author: "Peng Jin, Haoen Cui, Dayu Yao, Yuan Zhong, Wayne Tao"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
+short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+institute: "University of Illinois at Urbana-Champaign"
+short-institute: "UIUC"
+department: "Department of Statistics"                # Institute must be defined
+section-titles: false                            # Provides slide headings
+safe-columns: true                               # Enables special latex macros for columns.
+output: 
+   uiucthemes::beamer_illinois
+---
+
+# Peng Jin     
+## NetID: pengjin2 
+
+### Group Member Introduction 
+
+\begin{figure}
+\centerline{\includegraphics[width=0.75\textwidth]{img/groupinfo.png}}
+\caption{Group Members}
+\end{figure}
+
+### Agenda
+
+* Variable Annuity Introduction
+* Models
+    + Decrement
+    + Equity investment
+    + (Risk-free) Discount Rate 
+* Methods Used
+* R Shiny Demo
+* Conclusion 
+
+# Wayne Tao     
+## NetID: gtao2 
+
+### Variable Annuity Introduction
+
+There are a wide range of variable annuity products on the market, this project is focused on the **Guaranteed Minimum Death Benefit(GMDB)**.
+
+* Traditional Annuity
+    + An annuity is periodically payable upon survival
+
+* Traditional Whole Life
+    + A pre-determined single payment at death
+
+* Guaranteed Minimum Death Benefit
+    + the higher of ...   
+      * pre-determined monetary amount G  
+      * premiums invested into stock value (i.e. equity-linked)
+
+
+### Variable Annuity Introduction (Cont.)
+
+\begin{figure}
+\centerline{\includegraphics[width=0.75\textwidth]{img/varintro.png}}
+\caption{Variable Annuity Introduction}
+\end{figure}
+
+### Models: Mortality Decrement
+- $T_{(x)}$: Remaining life time random variable of $(x)$, a life of age $x$  
+\begin{eqnarray*}
+_{t}p_{x} & := & \text{Probability that a life (x) survive an extra t years} \\
+& = & \mathbb{P}(T_{(x)}>t) 
+\end{eqnarray*}
+- Life table (Discretized continuous model)
+
+x   | $l_{x}$ | $d_{x}$
+:-: | :-----: | :-------------:
+0   | 100000 | 637
+1   | 99363 | 45 
+2   | 99318 | 28
+
+- Estimator for integral ages $\widehat{_{t}p_x} = \frac{l_{x+t}}{l_x}$
+- Apply linear interpolation for fractional ages, aka UDD assumption
+
+# Peng Jin    
+## NetID: pengjin2
+
+### Models: Equity Investment Return 
+**Geometric Brownian Motion Model** A continuous-time stochastic process in which the logarithm of the randomly varying quantity follows a Brownian motion (also called a Wiener process) with drift. [from Wiki]
+
+#### Model Explanation
+Let $S_0$ denote the last stock closing price of the training data
+
+Let $S_t$ denote the predicted stock closing price after t periods
+
+Assume Stochastic Differential Equation (SDE):
+$$d[lnS_t]=\frac{dS_t}{S_t}=\mu t+\sigma dW_t$$
+Solution:  
+$$\frac{S_t}{S_0} \sim lgnorm(\mu-\frac{1}{2}\sigma^2,\sigma)$$
+
+### Models: (Risk-free) Discount Rate 
+
+**Vasicek Short Rate Model**
+A mathematical model describing the evolution of interest rates. It is a type of one-factor short rate model as it describes interest rate movements as driven by only one source of market risk. [from Wiki]
+
+#### Model Explanation
+Stochastic Differential Equation (SDE):
+$$dr_t=a[b-r_t]dt+\sigma dW_t$$
+
+* $a$ : speed of reversion
+
+* $b$ : long term mean level 
+
+* $\sigma$: instantaneous volatility  
+
+Solution: $\mathbb{E}[r_t]=r_0e^{-at}+b(1-e^{-at}), \space \space Var[r_t] = \frac{\sigma^2}{2a}(1-e^{-2at})$
+
+# Yuan Zhong     
+## NetID: yzhong19
+
+### STAT 428 Methods Used (Group 1)
+* Random Number Generator 
+    + Methods: inverse CDF, Accept-Rejection, Metropolis- Hasting
+	+ Use case: simulation of three sources of risks based on parameters estimated
+
+# Dayu Yao    
+## NetID: dayuyao2
+
+### STAT 428 Methods Used (Group 2)
+* Bootstrap
+	+ Method: regular bootstrap, jackknife
+	+ Use case: errors of estimators, accuracy of fit
+* Optimization: 
+	+ Methods: Newton-Raphson, BFGS (quasi-Newton)
+	+ Use case: MLE parameter estimates
+		
+# Haoen Cui   
+## NetID: hcui10
+
+### R Shiny Demonstration
+* Presenter: Haoen Cui (hcui10)
+
+### Conclusion 

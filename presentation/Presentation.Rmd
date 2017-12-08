@@ -1,6 +1,6 @@
 ---
-title: 'Actuarial Pricing of Equity-Linked Insurance via Simulation'
-short-title: "Pricing of ELI"
+title: 'Risk Analysis of Equity-Linked Insurance'
+short-title: "Equity-Linked Insurance"
 author: "Peng Jin, Haoen Cui, Dayu Yao, Yuan Zhong, Wayne Tao"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
 short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
@@ -39,7 +39,7 @@ output:
 
 ### Variable Annuity Introduction
 
-There are a wide range of variable annuity products on the market, this project is focused on the **Guaranteed Minimum Death Benefit(GMDB)**.
+There are a wide range of variable annuity products on the market, this project is focused on the **Guaranteed Minimum Death Benefit (GMDB)**.
 
 * Traditional Annuity
     + An annuity is periodically payable upon survival
@@ -132,7 +132,34 @@ Solution: $\mathbb{E}[r_t]=r_0e^{-at}+b(1-e^{-at}), \space \space Var[r_t] = \fr
 # Haoen Cui   
 ## NetID: hcui10
 
-### R Shiny Demonstration
-* Presenter: Haoen Cui (hcui10)
+### R Shiny Demonstration - Decrement Model
+\begin{figure}
+\centerline{\includegraphics[width=0.75\textwidth]{img/decrement_screenshot.png}}
+\caption{R Shiny Demo - Decrement Model Tab}
+\end{figure}
+
+### R Shiny Demonstration - Equity Investment Model
+\begin{figure}
+\centerline{\includegraphics[width=0.75\textwidth]{img/investment_screenshot.png}}
+\caption{R Shiny Demo - Equity Investment Model Tab}
+\end{figure}
+
+### R Shiny Demonstration - Discount Rate Model
+\begin{figure}
+\centerline{\includegraphics[scale=0.2]{img/discount_screenshot.png}}
+\caption{R Shiny Demo - Discount Rate Model Tab}
+\end{figure}
 
 ### Conclusion 
+* Equirt-Linked Insurance Product
+  + Guaranteed Minimum Death Benefit (GMDB)
+* Analysis of Risk
+  + Decrement
+  + Equity Investment
+  + Discount Rate
+* Future Work
+  + Educational tool for actuarial science student
+      * MATH 490 Special Topics
+  + GitHub Repo: https://github.com/pengjin2/STAT-428-Final-Project
+
+

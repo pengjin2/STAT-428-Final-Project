@@ -171,7 +171,7 @@ decrement.predict <- function(model.fit, t.now, dt, t.end, n, new.data){
   #       + source = any, model = "const":
   #           model.param = list(const)
   #   t.now: current time (year number, e.g. 2017)
-  #   dt: time increment in units of years (e.g. 1/12 is one month)
+  #   dt: time increment, can take value in c("daily", "monthly", "quarterly", "annually")
   #   t.end: further horizon to predict
   #   n: number of simulations
   #   new.data: new data to be predicted on, optional
@@ -179,6 +179,16 @@ decrement.predict <- function(model.fit, t.now, dt, t.end, n, new.data){
   # 
   # Return:
   #    a prediciton matrix (of data.frame type), nrow = (t.end - t.now) / dt, ncol = n
+  
+  t.now <- lubridate::year(t.now)
+  t.end <- lubridate::year(t.end)
+  # TODO: this cannot handle fractional years
+  
+  dt.char <- dt 
+  dt <- switch(dt, "daily" = 1/365, 
+               "monthly"   = 1/12, 
+               "quarterly" = 1/4, 
+               "annually"  = 1)
   
   pred.horizon <- seq(from = t.now, to = t.end, by = dt)
   if (model.fit$source == "mortality") {
@@ -219,6 +229,34 @@ decrement.predict <- function(model.fit, t.now, dt, t.end, n, new.data){
   }
 }
 
+
+# TODO: this function needs to be extended
+decrement.plot <- function(input.data, model.pred.df, t.now, t.end, dt.char) {
+  
+  model.pred.cum.death <- cumsum(rowMeans(model.pred.df))
+  data.frame(time.idx = seq(from = t.now, to = t.end, 
+                            by = switch(dt.char, 
+                                        "daily" = "day", 
+                                        "monthly" = "month", 
+                                        "quarterly" = "quarter", 
+                                        "annually" = "year")), 
+             life.remaining = input.data[1, "count"] - model.pred.cum.death) %>% 
+    ggplot(aes(x = time.idx, y = life.remaining)) + geom_area(fill="lightgrey") + 
+    scale_x_date(labels = scales::date_format(switch(dt.char, 
+                                                     "daily" = "%Y-%m-%d", 
+                                                     "monthly" = "%b %Y", 
+                                                     "quarterly" = "%b %Y", 
+                                                     "annually" = "%Y")), 
+                 date_breaks = switch(dt.char, 
+                                      "daily" = "3 months", 
+                                      "monthly" = "3 months", 
+                                      "quarterly" = "1 year", 
+                                      "annually" = "1 year")) + 
+    xlab("Time") + ylab("Number of Remaining Lives") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+          axis.line = element_line(colour = "black"), panel.border = element_blank())
+  
+}
 
 # The following is some helper code for data import
 # # read in seperate life tables for male and female

@@ -1,6 +1,7 @@
 source("decrement.R")
 source("investment.R")
 source("discount rate.R")
+# require("DT")
 require("shiny")
 require("tidyverse")
 
@@ -27,7 +28,14 @@ ui <- fluidPage(
         fileInput(inputId = "life.table", 
                   label = "Upload CSV File: Empirical Life Table",
                   multiple = FALSE,
-                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")) 
+                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")), 
+        numericInput(inputId = "life.num", label = "Number of Policyholders", 
+                     value = 20, step = 1), # need to be an integer
+        radioButtons(inputId = "life.gender", label = "Gender", 
+                     choices = c("Male" = "Male", "Female" = "Female"), 
+                     selected = "Male"), 
+        numericInput(inputId = "life.start.age", label = "Age at Policy Issuance", 
+                     value = 60, step = 1)
       
         # # Input: Enter a number ----
         # numericInput(inputId = "lapse.const", label = "Enter Periodic Lapse Rate (in decimal)", 
@@ -89,7 +97,7 @@ ui <- fluidPage(
       dateRangeInput(inputId = "pred.dates", 
                      label = "Prediction Horizon",
                      start = as.character(Sys.Date()), 
-                     end = as.character(Sys.Date() + lubridate::years(10))), 
+                     end = as.character(Sys.Date() + lubridate::years(15))), 
       
       # Input: time increment for analysis
       radioButtons(inputId = "dt", label = "Frequency of Analysis", 
@@ -109,7 +117,20 @@ ui <- fluidPage(
       navbarPage("SUBSECTION",
                   tabPanel("Dashboard", plotOutput("plot")),
                   navbarMenu(title = "Modeling", 
-                    tabPanel("Decrements", h3("Decrements")),
+                    tabPanel("Decrements", 
+                             titlePanel("Decrements"), 
+                             DT::dataTableOutput(
+                               outputId = "life.table.out"), 
+                             fluidRow(
+                               column(
+                                 width = 10, 
+                                 plotOutput(
+                                   outputId = "mortality.plot", 
+                                   hover = hoverOpts(id = "mortality.plot.hover"))), 
+                               column(
+                                 width = 2, 
+                                 htmlOutput(outputId = "mortality.plot.info"))
+                             )),
                     tabPanel("Equity Return", 
                              titlePanel("Equity Investment Model"), 
                              tabsetPanel(type = "tabs", 
@@ -168,8 +189,10 @@ ui <- fluidPage(
                                                      htmlOutput(outputId = "disc.plot.zoom.info"))
                                                  ), 
                                                  fluidRow(
-                                                   plotOutput(outputId = "disc.plot.ZCBondPrice"), 
-                                                   plotOutput(outputId = "disc.plot.YieldCurve")
+                                                   column(width = 6, 
+                                                          plotOutput(outputId = "disc.plot.ZCBondPrice")), 
+                                                   column(width = 6, 
+                                                          plotOutput(outputId = "disc.plot.YieldCurve"))
                                                  )
                                                  ))))), 
                   navbarMenu(title = "Profit Testing", 
@@ -192,6 +215,65 @@ server <- function(input, output) {
   ### DECREMENT SECTION
   ##############################################################################
   
+  life.table <- reactive({
+    inFile <- input$life.table
+    
+    if (is.null(inFile))
+      return(NULL)
+    
+    decrement.clean.data(
+      path.to.file = inFile$datapath, 
+      source = "mortality", 
+      model = "life-table")
+  })
+  
+  mortality.model <- reactive({
+    decrement.calibrate(
+      hist.data = life.table(), 
+      source = "mortality", 
+      model = "life-table", 
+      model.param = list(assumption = "UDD"))
+  })
+  
+  mortality.input.data <- reactive({
+    data.frame(count = c(as.integer(input$life.num)), 
+               gender = c(input$life.gender), 
+               start.age = c(input$life.start.age))
+  })
+  
+  mortality.model.pred <- reactive({
+    decrement.predict(
+      model.fit = mortality.model(), 
+      t.now = as.Date(input$pred.dates[1]), dt = input$dt, t.end = as.Date(input$pred.dates[2]), 
+      n = input$sim.num, new.data = mortality.input.data())
+  })
+  
+  output$life.table.out <- DT::renderDataTable({
+    DT::datatable(data = life.table() %>% mutate(gender = as.factor(gender)), 
+                  filter = "top", rownames = FALSE, 
+                  colnames = c("Gender", "Remaining Lives (lx)", "Annual Number of Death (dx)", "Age (x)"),
+                  options = list(pageLength = 5))
+  })
+  
+  output$mortality.plot <- renderPlot({
+    decrement.plot(input.data = mortality.input.data(), 
+                   model.pred.df = mortality.model.pred(), 
+                   t.now = as.Date(input$pred.dates[1]), 
+                   t.end = as.Date(input$pred.dates[2]), 
+                   dt.char = input$dt)
+  })
+  
+  output$mortality.plot.info <- renderUI({
+    HTML(paste(
+      "<em>Mouse Hover On ...</em>", 
+      sprintf("Time: %s", 
+              ifelse(is.null(input$mortality.plot.hover$x), "NULL", 
+                     as.character(as.Date(input$mortality.plot.hover$x, origin = "1970-01-01")))), 
+      sprintf("Remaining Lives: %s", 
+              ifelse(is.null(input$mortality.plot.hover$y), "NULL", 
+                     format(round(input$mortality.plot.hover$y, digits = 2)))), 
+      sep = "<br/>"))
+  })
   
   ##############################################################################
   ### INVESTMENT SECTION
@@ -252,8 +334,8 @@ server <- function(input, output) {
                 model = input$inv.model, 
                 param = param.est.inv(), 
                 sim.length = 
-                  as.numeric(substr(input$inv.dates[2], start = 1, stop = 4)) - 
-                  as.numeric(substr(input$inv.dates[1], start = 1, stop = 4)), 
+                  as.numeric(substr(input$pred.dates[2], start = 1, stop = 4)) - 
+                  as.numeric(substr(input$pred.dates[1], start = 1, stop = 4)), 
                 n = input$sim.num, 
                 dt = input$dt)
   })
@@ -359,8 +441,8 @@ server <- function(input, output) {
     disc.predict(
       model.fit = model.fit.disc(), 
       sim.length = 
-        as.numeric(substr(input$disc.dates[2], start = 1, stop = 4)) - 
-        as.numeric(substr(input$disc.dates[1], start = 1, stop = 4)), 
+        as.numeric(substr(input$pred.dates[2], start = 1, stop = 4)) - 
+        as.numeric(substr(input$pred.dates[1], start = 1, stop = 4)), 
       n = input$sim.num)
   })
   

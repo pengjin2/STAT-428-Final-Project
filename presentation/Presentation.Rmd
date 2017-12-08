@@ -161,5 +161,6 @@ Solution: $\mathbb{E}[r_t]=r_0e^{-at}+b(1-e^{-at}), \space \space Var[r_t] = \fr
   + Educational tool for actuarial science student
       * MATH 490 Special Topics
   + GitHub Repo: https://github.com/pengjin2/STAT-428-Final-Project
+  + Online R Shiny App: https://haoencuitest.shinyapps.io/eli_pricing/
 
 

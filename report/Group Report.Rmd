@@ -192,6 +192,6 @@ NCmisc::list.functions.in.file("../application/discount rate.R")$`character(0)`
    
 Self-implemented **random number generator**: 
 ```{r, echo = FALSE}
-NCmisc::list.functions.in.file("../application/discount rate.R")$`character(0)`
+NCmisc::list.functions.in.file("../application/Random Number Generator.R")$`character(0)`
 ```
 
